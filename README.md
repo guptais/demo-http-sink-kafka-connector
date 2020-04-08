@@ -8,7 +8,7 @@ Confluent Platform is installed and services are running locally.
 
 Step 1: I am using the Kafka REST Proxy to demonstrate this which is already available within the kafka cluster.
 
-Step 2: Create 2 topics using the 2 commands or you can also use Confluent Control-center is that is running on localhost:9021
+Step 2: Create 2 topics using the 2 commands or you can also use Confluent Control-center which is running on localhost:9021
 
 ```
 kafka-topics --zookeeper zookeeper:2181 --topic jsontest.source --create --replication-factor 1 --partitions 1
