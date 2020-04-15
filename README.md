@@ -101,9 +101,6 @@ In the opened kafka console consumer you should see the following:
 
 [Configuration details about the connector](https://docs.confluent.io/current/connect/kafka-connect-http/connector_config.html#connection)
 
-
-
-
 Capturing Failed POST requests:
 
 We can do error reporting to produce records to after each unsuccessful POST. 
@@ -114,7 +111,7 @@ We can also write custom Transformations.
 
 https://www.confluent.io/blog/kafka-connect-single-message-transformation-tutorial-with-examples/
 
-Aggregation being a stateful transformation cannot be done within SMTs. 
+Aggregation, being a stateful transformation, cannot be done within SMTs. 
 Complex transformations and operations that apply to multiple messages are best implemented with KSQL and Kafka Streams.
 
 Reference:
