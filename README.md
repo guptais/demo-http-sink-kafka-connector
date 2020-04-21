@@ -2,9 +2,7 @@
 
 ## [HTTP-Sink-Connector](https://docs.confluent.io/current/connect/kafka-connect-http/index.html#connect-http-connector)
 
-### Prerequisites:
-
-Confluent Platform is installed and services are running locally. 
+Prerequisites: Confluent Platform is installed and services are running locally. 
 
 Step 1: I am using the Kafka REST Proxy to demonstrate this which is already available within the kafka cluster.
 
@@ -101,7 +99,7 @@ In the opened kafka console consumer you should see the following:
 
 [Configuration details about the connector](https://docs.confluent.io/current/connect/kafka-connect-http/connector_config.html#connection)
 
-Capturing Failed POST requests:
+#### Capturing Failed POST requests:
 
 We can do error reporting to produce records to after each unsuccessful POST. 
 There is a lag in error reporting because of the retry attempts. Retry attempts are configurable.
