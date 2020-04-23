@@ -57,6 +57,8 @@ confluent local start
 confluent local load httpsink -- -d simpleHttpSink.json
 ```
 
+[Configuration details about the connector](https://docs.confluent.io/current/connect/kafka-connect-http/connector_config.html#connection)
+
 ### Check status of connector
 
 ```
@@ -97,15 +99,11 @@ Reproduce a error in the REST API, error is received in the `error-responses` to
 
 #### Transformation of messages
 
-SMT(Single Message Transform) can be used to transform the message for the http request body. There are many pre-build transformations available.
+[SMT](https://www.confluent.io/blog/kafka-connect-single-message-transformation-tutorial-with-examples/)(Single Message Transform) can be used to transform the message for the http request body. There are many pre-build transformations available.
 We can also write custom Transformations.
-
-https://www.confluent.io/blog/kafka-connect-single-message-transformation-tutorial-with-examples/
 
 Aggregation, being a stateful transformation, cannot be done within SMTs.
 Complex transformations and operations that apply to multiple messages are best implemented with KSQL and Kafka Streams.
-
-[Configuration details about the connector](https://docs.confluent.io/current/connect/kafka-connect-http/connector_config.html#connection)
 
 ### Troubleshooting:
 
