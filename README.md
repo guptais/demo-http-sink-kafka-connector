@@ -6,7 +6,7 @@
 
 Confluent Platform is installed and services are running locally.
 
-### How to install the run a local kafka cluster
+### How to install and run a local kafka cluster
 
 Note: Download the Confluent platform tar or zip and extract it into a directory `~/confluent-platform`. Set an environment variable to this path.
 
