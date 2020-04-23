@@ -2,202 +2,124 @@
 
 ## [HTTP-Sink-Connector](https://docs.confluent.io/current/connect/kafka-connect-http/index.html#connect-http-connector)
 
-Prerequisites: Confluent Platform is installed and services are running locally.
+### Prerequisites:
 
+Confluent Platform is installed and services are running locally.
 
-I used the docker quickstart to run a local kafka cluster with a http connector already running in it, follow the below step to do so. 
+### How to install the run a local kafka cluster
 
-From the project directory, run the following docker command:
-
-```
-docker-compose up -d
-```
-Wait for a kafka cluster and connector to become healthy. You should see something like this when you do 
+Note: Download the Confluent platform tar or zip and extract it into a directory `~/confluent-platform`. Set an environment variable to this path.
 
 ```
->docker-compose ps
-
-
-     Name                  Command               State                         Ports                   
--------------------------------------------------------------------------------------------------------
-broker            /etc/confluent/docker/run   Up             0.0.0.0:9092->9092/tcp                    
-control-center    /etc/confluent/docker/run   Up             0.0.0.0:9021->9021/tcp                    
-http-connector    /etc/confluent/docker/run   Up (healthy)   0.0.0.0:8083->8083/tcp, 9092/tcp          
-schema-registry   /etc/confluent/docker/run   Up             0.0.0.0:8081->8081/tcp                    
-zookeeper         /etc/confluent/docker/run   Up             0.0.0.0:2181->2181/tcp, 2888/tcp, 3888/tcp
+export CONFLUENT_HOME=~/confluent-platform
+export PATH=$PATH:$CONFLUENT_HOME/bin
 ```
-
-I am using curl command to interact with the cluster using the kafka connect container in the following way:
-
-//Get worker cluster ID, version, and git source code commit ID:
-```
-curl localhost:8083/ | jq
-```
-
-List all the connectors available on a kafka-connect worker:
-```
-curl localhost:8083/connector-plugins | jq
-```
-
-List active connectors
-```
-curl localhost:8083/connectors | jq
-```
-
-Load the simple http connector with the configuration in `simpleHttpSink.json`
+Install confluent hub client using brew. Commands for MacOS
 
 ```
-curl -X POST -H "Content-Type: application/json" --data @simpleHttpSink.json http://localhost:8083/connectors
-```
-Now list active connectors
-```
-curl localhost:8083/connectors | jq
-
-[
-  "SimpleHttpSink"
-]
+brew tap confluentinc/homebrew-confluent-hub-client
+brew cask install confluent-hub-client
 ```
 
-Getting tasks for a connector
+### Install http connector using confluent hub client.
 
 ```
-curl localhost:8083/connectors/SimpleHttpSink/tasks | jq
-```
-Output should resemble:
-```
-{
-  "name": "SimpleHttpSink",
-  "config": {
-    "connector.class": "io.confluent.connect.http.HttpSinkConnector",
-    "confluent.topic.bootstrap.servers": "localhost:9092",
-    "topics": "http-messages",
-    "tasks.max": "1",
-    "http.api.url": "http://localhost:8080/api/messages",
-    "reporter.bootstrap.servers": "localhost:9092",
-    "reporter.error.topic.name": "error-responses",
-    "reporter.result.topic.name": "success-responses",
-    "reporter.error.topic.replication.factor": "1",
-    "confluent.topic.replication.factor": "1",
-    "name": "SimpleHttpSink",
-    "value.converter": "org.apache.kafka.connect.storage.StringConverter",
-    "reporter.result.topic.replication.factor": "1"
-  },
-  "tasks": [],
-  "type": "sink"
-}
-```
-You can also visit the control center running to `localhost:9021` to see the status of the cluster.
-
-![Confluent Control Center](./images/Control_Center.png)
-
-Step 1: I am using the Kafka REST Proxy to demonstrate this which is already available within the kafka cluster.
-
-Step 2: Create 2 topics using the 2 commands or you can also use Confluent Control-center which is running on localhost:9021
-
-```
-kafka-topics --zookeeper zookeeper:2181 --topic jsontest.source --create --replication-factor 1 --partitions 1
-kafka-topics --zookeeper zookeeper:2181 --topic jsontest.replica --create --replication-factor 1 --partitions 1
+confluent-hub install confluentinc/kafka-connect-http:latest
 ```
 
-Step 3: Put some data in source topic by running a kafka producer
+## Demo REST API service
+
+I am using an existing java REST API available on the internet. 
+clone and run the `kafka-connect-http-demo` app on your machine.
 
 ```
-kafka-console-producer --broker-list localhost:10091 --topic jsontest.source
->{"foo1":"bar1"}
->{"foo2":"bar2"}
->{"foo3":"bar3"}
->{"foo4":"bar4"}
+git clone https://github.com/confluentinc/kafka-connect-http-demo.git
+cd kafka-connect-http-demo
+mvn spring-boot:run -Dspring.profiles.active=simple-auth
 ```
 
-Step 4: Start a consumer for the destination topic
+### Start the local kafka cluster
 
 ```
-kafka-console-consumer --bootstrap-server localhost:10091 --topic jsontest.replica --from-beginning
+confluent local start
 ```
 
-
-Step 5: Load the HTTP Sink Connector
-Now we submit the HTTP connector to the cp-demo connect instance:
-
-From outside the container:
-
-```curl -X POST -H "Content-Type: application/json" --data '{ \
-"name": "http-sink", \
-"config": { \
-        "connector.class":"uk.co.threefi.connect.http.HttpSinkConnector", \
-        "tasks.max":"1", \
-        "http.api.url":"https://restproxy:8086/topics/jsontest.replica", \
-        "topics":"jsontest.source", \
-        "request.method":"POST", \
-        "headers":"Content-Type:application/vnd.kafka.json.v2+json|Accept:application/vnd.kafka.v2+json", \
-        "value.converter":"org.apache.kafka.connect.storage.StringConverter", \
-        "batch.prefix":"{\"records\":[", \
-        "batch.suffix":"]}", \
-        "batch.max.size":"5", \
-        "regex.patterns":"^~$", \
-        "regex.replacements":"{\"value\":~}", \
-        "regex.separator":"~" }}' \
-http://localhost:8083/connectors
-```
-Output should resemble:
-
-```{ \
-"name":"http-sink", \
-"config":{ \
-        "connector.class":"uk.co.threefi.connect.http.HttpSinkConnector", \
-        "tasks.max":"1", \
-        "http.api.url":"https://restproxy:8086/topics/jsontest.replica", \
-        "topics":"jsontest.source", \
-        "request.method":"POST", \
-        "headers":"Content-Type:application/vnd.kafka.json.v2+json|Accept:application/vnd.kafka.v2+json", \
-        "value.converter":"org.apache.kafka.connect.storage.StringConverter", \
-        "batch.prefix":"{\"records\":[", \
-        "batch.suffix":"]}", \
-        "batch.max.size":"5", \
-        "regex.patterns":"^~$", \
-        "regex.replacements":"{\"value\":~}", \
-        "regex.separator":"~", \
-        "name":"http-sink"}, \
-"tasks":[], \
-"type":null \
-}
-```
-Kafka REST Proxy expects data to be wrapped in a structure as below:
+### Load the simple Http sink connector
 
 ```
-{
-  "records":[
-        { "value": {"foo1":"bar1" } },
-        { "value": {"foo2":"bar2" } }
-      ]
-}
+confluent local load httpsink -- -d simpleHttpSink.json
 ```
 
-In the opened kafka console consumer you should see the following:
+### Check status of connector
 
 ```
-{"foo1":"bar1"}
-{"foo2":"bar2"}
-{"foo3":"bar3"}
-{"foo4":"bar4"}
-{"foo5":"bar5"}
+confluent local status SimpleHttpSink
 ```
 
-[Configuration details about the connector](https://docs.confluent.io/current/connect/kafka-connect-http/connector_config.html#connection)
+Produce some message to the `http-messages` topic
+
+```
+confluent local produce http-messages
+```
+
+Open few consumers in another terminal window to monitor the other topics.
+
+```
+confluent local consume <topic-name>
+```
+
+I am interested in monitoring 3 topics:
+- http-messages
+- success-responses
+- error-responses
+
+I have opened 5 terminals all splitted in a window, as shown below:
+
+#### Capturing the HTTP Response from the API
+
+I produced string messages to the Source topic and received them in the Success Response topic
+
+![Messages received in Success response topic](./images/Success-Response-Topic.png)
 
 #### Capturing Failed POST requests:
 
-We can do error reporting to produce records to after each unsuccessful POST. 
+We can do error reporting to produce records to after each unsuccessful POST.
 There is a lag in error reporting because of the retry attempts. Retry attempts are configurable.
 
-SMT can be used to transform the message for the http request body. There are many pre-build transformations available. 
+When the REST API was down due to any error, I received the error in the Error Response topic
+
+![Messages in Error Response topic](./images/Error-Response-topic.png)
+
+#### Transformation of messages
+
+SMT(Single Message Transform) can be used to transform the message for the http request body. There are many pre-build transformations available.
 We can also write custom Transformations.
 
 https://www.confluent.io/blog/kafka-connect-single-message-transformation-tutorial-with-examples/
 
-Aggregation, being a stateful transformation, cannot be done within SMTs. 
+Aggregation, being a stateful transformation, cannot be done within SMTs.
 Complex transformations and operations that apply to multiple messages are best implemented with KSQL and Kafka Streams.
 
-Reference:
-https://docs.confluent.io/current/quickstart/index.html
-https://docs.confluent.io/current/cli/command-reference/confluent-local/index.html#confluent-local
+[Configuration details about the connector](https://docs.confluent.io/current/connect/kafka-connect-http/connector_config.html#connection)
+
+### Troubleshooting:
+
+Below are some commands to debug some issues:
+
+```
+curl -X POST localhost:8083/connectors/SimpleHttpSink/restart | jq
+
+confluent local unload SimpleHttpSink -- -d simpleHttpSink.json
+
+curl localhost:8083/connectors/SimpleHttpSink/status | jq
+
+```
+You can also delete the connector and create it again. Refer the below links.
+
+### References:
+
+- https://docs.confluent.io/current/quickstart/index.html
+- https://docs.confluent.io/current/cli/command-reference/confluent-local/index.html#confluent-local
+- https://docs.confluent.io/3.2.0/connect/managing.html
+- https://www.confluent.io/blog/webify-event-streams-using-kafka-connect-http-sink/
+
