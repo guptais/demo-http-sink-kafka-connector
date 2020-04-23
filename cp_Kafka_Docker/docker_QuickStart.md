@@ -1,13 +1,13 @@
 # Using Docker to start a local kafka cluster
 
-I used the docker quickstart to run a local kafka cluster with a http connector already running in it, follow the below step to do so. 
+Use below steps to run a local kafka cluster with a http connector already running in it:
 
-From the project directory, run the following docker command:
+From the directory `cp_Kafka_Docker`, run the following docker command:
 
 ```
 docker-compose up -d
 ```
-Wait for a kafka cluster and connector to become healthy. You should see something like this when you do 
+Wait for a kafka cluster and connector to become healthy. You should see something like this:
 
 ```
 >docker-compose ps
@@ -38,7 +38,7 @@ List active connectors
 ```
 curl localhost:8083/connectors | jq
 ```
-At the moment, we dont have any connectors.
+At the moment, there are no connectors.
 
 Load the simple http connector with the configuration in `simpleHttpSink.json`
 
@@ -91,3 +91,5 @@ curl localhost:8083/connectors/SimpleHttpSink/status | jq
 You can also visit the control center running to `localhost:9021` to see the status of the cluster.
 
 ![Confluent Control Center](../images/Control_Center.png)
+
+And that's it. A Cluster Kafka a kakfa connect node is running locally.

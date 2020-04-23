@@ -1,6 +1,6 @@
 # How to use Kafka Http Sink Connector from Confluent
 
-## [HTTP-Sink-Connector](https://docs.confluent.io/current/connect/kafka-connect-http/index.html#connect-http-connector)
+### [HTTP-Sink-Connector](https://docs.confluent.io/current/connect/kafka-connect-http/index.html#connect-http-connector)
 
 ### Prerequisites:
 
@@ -55,38 +55,36 @@ confluent local load httpsink -- -d simpleHttpSink.json
 ```
 confluent local status SimpleHttpSink
 ```
+For the sake of demo, let's monitor 3 topics:
+- `http-messages`
+- `success-responses`
+- `error-responses`
 
-Produce some message to the `http-messages` topic
+#### Capturing the HTTP Response from the API
 
+Produce some string messages to the Source `http-messages` topic
 ```
 confluent local produce http-messages
 ```
 
-Open few consumers in another terminal window to monitor the other topics.
+Consume the http response in the `success-responses` topic
+
+Note: Open few consumers in another terminal window to monitor the other topics.
 
 ```
 confluent local consume <topic-name>
 ```
-
-I am interested in monitoring 3 topics:
-- http-messages
-- success-responses
-- error-responses
-
-I have opened 5 terminals all splitted in a window, as shown below:
-
-#### Capturing the HTTP Response from the API
-
-I produced string messages to the Source topic and received them in the Success Response topic
 
 ![Messages received in Success response topic](./images/Success-Response-Topic.png)
 
 #### Capturing Failed POST requests:
 
 We can do error reporting to produce records to after each unsuccessful POST.
-There is a lag in error reporting because of the retry attempts. Retry attempts are configurable.
 
-When the REST API was down due to any error, I received the error in the Error Response topic
+*Note: There is a lag in error reporting because of the retry attempts. Retry attempts are configurable.*
+
+Reproduce a error in the REST API, error is received in the `error-responses` topic.
+*(See in the bottom right corner in the screenshot)*
 
 ![Messages in Error Response topic](./images/Error-Response-topic.png)
 
@@ -104,22 +102,23 @@ Complex transformations and operations that apply to multiple messages are best 
 
 ### Troubleshooting:
 
-Below are some commands to debug some issues:
+- Below are some commands to debug some issues:
 
 ```
+//Restart the connector
 curl -X POST localhost:8083/connectors/SimpleHttpSink/restart | jq
 
+//Unload a connector
 confluent local unload SimpleHttpSink -- -d simpleHttpSink.json
 
-curl localhost:8083/connectors/SimpleHttpSink/status | jq
-
 ```
-You can also delete the connector and create it again. Refer the below links.
+- You can also delete the connector and create it again. Refer the below links.
 
-### References:
+### References for futher reading:
 
-- https://docs.confluent.io/current/quickstart/index.html
-- https://docs.confluent.io/current/cli/command-reference/confluent-local/index.html#confluent-local
-- https://docs.confluent.io/3.2.0/connect/managing.html
-- https://www.confluent.io/blog/webify-event-streams-using-kafka-connect-http-sink/
+- [HTTP-Sink-Connector](https://docs.confluent.io/current/connect/kafka-connect-http/index.html#connect-http-connector)
+- [Confluent Quickstart](https://docs.confluent.io/current/quickstart/index.html)
+- [Confluent Local](https://docs.confluent.io/current/cli/command-reference/confluent-local/index.html#confluent-local)
+- [Managing Kafka Connect](https://docs.confluent.io/3.2.0/connect/managing.html)
+- [Confluent blog](https://www.confluent.io/blog/webify-event-streams-using-kafka-connect-http-sink/)
 
