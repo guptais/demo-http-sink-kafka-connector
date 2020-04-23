@@ -1,6 +1,13 @@
 # How to use Kafka Http Sink Connector from Confluent
 
-### [HTTP-Sink-Connector](https://docs.confluent.io/current/connect/kafka-connect-http/index.html#connect-http-connector)
+### Problem statement:
+- How to move data from KAFKA cluster to a REST API.
+- Capture the API response.
+- Capture any API errors while posting the message.
+
+Confluent has recently released a [HTTP-Sink-Connector](https://docs.confluent.io/current/connect/kafka-connect-http/index.html#connect-http-connector). In this demo I am demonstrating how this connector can be used to solve the above mentioned problems.
+
+Note: This connector needs a license for production use.
 
 ### Prerequisites:
 
@@ -29,8 +36,8 @@ confluent-hub install confluentinc/kafka-connect-http:latest
 
 ## Demo REST API service
 
-I am using an existing java REST API available on the internet. 
-clone and run the `kafka-connect-http-demo` app on your machine.
+Start any REST API for testing.
+*I used the one used by Confluent `kafka-connect-http-demo`*
 
 ```
 git clone https://github.com/confluentinc/kafka-connect-http-demo.git
