@@ -90,4 +90,4 @@ curl localhost:8083/connectors/SimpleHttpSink/status | jq
 
 You can also visit the control center running to `localhost:9021` to see the status of the cluster.
 
-![Confluent Control Center](./images/Control_Center.png)
+![Confluent Control Center](../images/Control_Center.png)
