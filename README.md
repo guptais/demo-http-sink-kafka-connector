@@ -86,7 +86,9 @@ Output should resemble:
   "type": "sink"
 }
 ```
-You can also visit the control center running oo `localhost:9021` to see the status of the cluster.
+You can also visit the control center running to `localhost:9021` to see the status of the cluster.
+
+![Confluent Control Center](./images/Control_Center.png)
 
 Step 1: I am using the Kafka REST Proxy to demonstrate this which is already available within the kafka cluster.
 
