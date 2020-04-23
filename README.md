@@ -4,6 +4,7 @@
 - How to move data *from* KAFKA cluster *to* a REST API.
 - Capture the API response.
 - Capture any API errors while posting the message.
+- Transform the messages
 
 Confluent has recently released a [HTTP-Sink-Connector](https://docs.confluent.io/current/connect/kafka-connect-http/index.html#connect-http-connector). In this demo I am demonstrating how this connector can be used to solve the above mentioned problems.
 
