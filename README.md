@@ -1,5 +1,7 @@
 # How to use Kafka Http Sink Connector from Confluent
 
+![An example use case](./images/HTTP-Sink-Connector.png)
+
 ### Problem statement:
 - How to move data *from* KAFKA cluster *to* a REST API.
 - Capture the API response.
