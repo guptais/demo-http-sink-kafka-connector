@@ -1,6 +1,6 @@
 # How to use Kafka Http Sink Connector from Confluent
 
-![An example use case](./images/HTTP-Sink-Connector.png)
+![An example use case](../images/HTTP-Sink-Connector.png)
 
 ### Problem statement:
 - Consume a message from a topic and Transform the message fields for the REST API
@@ -87,7 +87,7 @@ Note: Open few consumers in another terminal window to monitor the other topics.
 confluent local consume <topic-name>
 ```
 
-![Messages received in Success response topic](./images/Success-Response-Topic.png)
+![Messages received in Success response topic](../images/Success-Response-Topic.png)
 
 #### Capturing Failed POST requests:
 
@@ -98,7 +98,7 @@ We can do error reporting to produce records to after each unsuccessful POST.
 Reproduce a error in the REST API, error is received in the `error-responses` topic.
 *(See in the bottom right corner in the screenshot)*
 
-![Messages in Error Response topic](./images/Error-Response-topic.png)
+![Messages in Error Response topic](../images/Error-Response-topic.png)
 
 #### Transformation of messages
 
